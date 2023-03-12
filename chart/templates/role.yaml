@@ -1,0 +1,16 @@
+# Allows the service account to:  
+#  
+# - Get namespaces. 
+# - Get/patch our deployments and statefulsets, to allow the 
+#   "restart rollout" command to work.  
+apiVersion: rbac.authorization.k8s.io/v1  
+kind: Role  
+metadata:  
+  name: {{ include "kube-workflow-restarter.serviceAccountName" . }}
+rules:  
+  #- apiGroups: [ "" ]  
+  #  resources: [ "namespaces", "pods" ]  
+  #  verbs: [ "get" ]  
+  - apiGroups: [ "apps", "extensions" ]  
+    resources: [ "deployments", "statefulsets", "replicasets" ]  
+    verbs: [ "get", "patch", "list" ]
