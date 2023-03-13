@@ -1,1 +1,1 @@
-kube-workflow-restarter is installed. Enjoy!
+kube-workload-restarter is installed. Enjoy!

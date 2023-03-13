@@ -7,6 +7,6 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-COPY src/restarter.py restarter.py 
+COPY src/*.py ./
 
-CMD [ "python3", "./restarter.py"]
+CMD [ "python3", "./main.py"]

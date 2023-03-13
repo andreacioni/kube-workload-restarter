@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kube-workflow-restarter.fullname" . }}
+  name: {{ include "kube-workload-restarter.fullname" . }}
   labels:
-    {{- include "kube-workflow-restarter.labels" . | nindent 4 }}
+    {{- include "kube-workload-restarter.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "kube-workflow-restarter.selectorLabels" . | nindent 6 }}
+      {{- include "kube-workload-restarter.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "kube-workflow-restarter.selectorLabels" . | nindent 8 }}
+        {{- include "kube-workload-restarter.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "kube-workflow-restarter.serviceAccountName" . }}
+      serviceAccountName: {{ include "kube-workload-restarter.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

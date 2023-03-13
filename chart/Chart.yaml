@@ -1,6 +1,6 @@
 apiVersion: v2
-name: kube-workflow-restarter
-description: kube-workflow-restarter Helm package
+name: kube-workload-restarter
+description: kube-workload-restarter Helm package
 
 # A chart can be either an 'application' or a 'library' chart.
 #
