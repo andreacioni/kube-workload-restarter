@@ -2,11 +2,6 @@
 
 FROM python:3.8-slim-buster
 
-WORKDIR /app
+RUN pip3 install k8s-workload-restarter==0.0.4
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
-COPY src/*.py ./
-
-CMD [ "python3", "./main.py"]
+CMD [ "python3", "-m", "k8s-workload-restarter"]
