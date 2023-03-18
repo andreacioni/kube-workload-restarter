@@ -18,6 +18,7 @@ TO_UPDATE=(
     pyproject.toml
     chart/Chart.yaml
     .github/workflows/main.yml
+    Dockerfile
 )
 
 echo "Current version is: $CURRENT_VERSION. Enter new version:"
@@ -40,11 +41,3 @@ git push
 git tag -a v$NEW_VERSION -m "Release v$NEW_VERSION"
 
 git push origin v$NEW_VERSION
-
-echo "Creating version for PyPi"
-
-python3 setup.py sdist bdist_wheel
-
-echo "Uploading to PyPi"
-
-python3 -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*

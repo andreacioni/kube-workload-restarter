@@ -2,8 +2,8 @@ import signal
 import time
 from kubernetes import config, client
 
-from restarter import get_all_deployments_in_namespace, handle_deployment
-from log import log
+from .restarter import get_all_deployments_in_namespace, handle_deployment
+from .log import log
 
 LOOP_INTERVAL_SEC = 30
 NAMESPACE = 'default'

@@ -7,8 +7,8 @@ import logging
 import re
 import signal
 
-from util import parse_duration
-from log import log
+from .util import parse_duration
+from .log import log
 
 
 RESTARTER_ANNOTATION = 'restarter/after'
