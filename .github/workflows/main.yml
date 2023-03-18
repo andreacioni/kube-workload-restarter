@@ -43,6 +43,12 @@ jobs:
             user: __token__
             password: ${{ secrets.PYPI_API_TOKEN }}
 
+        # give some time to PyPi to actually publish the new package
+        - name: Sleep for 15s
+          uses: juliangruber/sleep-action@v1
+          with:
+            time: 15s
+
         - name: Build and push
           uses: docker/build-push-action@v4
           with:
