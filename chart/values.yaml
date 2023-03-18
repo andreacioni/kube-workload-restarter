@@ -2,7 +2,7 @@ image:
   repository: andreacioni/kube-workload-restarter
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.1"
+  #tag: "0.0.1"
 
 serviceAccount:
   # Specifies whether a service account should be created
