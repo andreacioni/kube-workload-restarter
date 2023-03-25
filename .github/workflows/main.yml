@@ -24,32 +24,6 @@ jobs:
             username: ${{ secrets.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-        - name: Set up Python 3.8
-          uses: actions/setup-python@v4
-          with:
-            python-version: 3.8
-        
-        - name: Install dependencies
-          run: pip install -r requirements.txt
-
-        - name: Install build dependencies
-          run: pip install build
-
-        - name: Build package
-          run: python -m build
-
-        - name: Publish a Python distribution to PyPI
-          uses: pypa/gh-action-pypi-publish@release/v1
-          with:
-            user: __token__
-            password: ${{ secrets.PYPI_API_TOKEN }}
-
-        # give some time to PyPi to actually publish the new package
-        - name: Sleep for 30s
-          uses: juliangruber/sleep-action@v1
-          with:
-            time: 30s
-
         - name: Build and push
           uses: docker/build-push-action@v4
           with:

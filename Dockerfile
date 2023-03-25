@@ -1,7 +1,11 @@
-# syntax=docker/dockerfile:1
+FROM golang:1.20.2
 
-FROM python:3.8-slim-buster
+WORKDIR /usr/src/app
 
-RUN pip3 install k8s-workload-restarter==0.0.11
+COPY src/main.go go.mod go.sum ./
 
-CMD [ "python3", "-m", "k8s-workload-restarter"]
+RUN go mod download && go mod verify
+
+RUN go build -v -o /usr/local/bin/app 
+
+CMD ["app"]

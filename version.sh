@@ -15,10 +15,8 @@ echo "Creating new version"
 FILE=pyproject.toml
 CURRENT_VERSION=$(cat $FILE | grep version | awk '{print $3}' | cut -d '"' -f 2)
 TO_UPDATE=(
-    pyproject.toml
     chart/Chart.yaml
     .github/workflows/main.yml
-    Dockerfile
 )
 
 echo "Current version is: $CURRENT_VERSION. Enter new version:"
