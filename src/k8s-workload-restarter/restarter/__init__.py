@@ -2,16 +2,13 @@ import sys
 from kubernetes import client
 import datetime
 import pytz
-import time
-import logging
-import re
-import signal
 
 from ..utils import parse_duration
 from ..log import log
 
 
-RESTARTER_ANNOTATION = 'restarter/after'
+RESTARTER_LIFETIME_ANNOTATION = 'k8s-deployment-restarter/lifetime'
+RESTARTER_CRON_ANNOTATION = 'k8s-deployment-restarter/cron'
 
 
 def _restart_deployment(api: client.AppsV1Api, deployment):
