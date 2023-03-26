@@ -31,7 +31,7 @@ jobs:
   #        uses: docker/build-push-action@v4
   #        with:
   #          push: true
-  #          tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.18
+  #          tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.19
   #        
   release:
     name: Release Chart
