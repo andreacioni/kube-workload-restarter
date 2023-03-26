@@ -31,7 +31,7 @@ jobs:
   #        uses: docker/build-push-action@v4
   #        with:
   #          push: true
-  #          tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.20
+  #          tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.21
   #        
   release:
     name: Release Chart
@@ -43,7 +43,7 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v3
           with:
-            fetch-depth: 0
+            fetch-depth: 100
 
         - name: Configure Git
           run: |
