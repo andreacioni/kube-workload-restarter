@@ -12,8 +12,8 @@ fi
 
 echo "Creating new version"
 
-FILE=pyproject.toml
-CURRENT_VERSION=$(cat $FILE | grep version | awk '{print $3}' | cut -d '"' -f 2)
+FILE=chart/Chart.yaml
+CURRENT_VERSION=$(cat $FILE | grep appVersion | awk '{print $2}' | cut -d '"' -f 2)
 TO_UPDATE=(
     chart/Chart.yaml
     .github/workflows/main.yml

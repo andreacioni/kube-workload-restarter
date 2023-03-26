@@ -14,6 +14,7 @@ import (
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 
@@ -30,27 +31,34 @@ var (
 	configuration Config
 )
 
+type Config struct {
+	Kubeconfig      string
+	Namespace       string
+	LoopDurationSec int64
+	Verbose         bool
+}
+
 func main() {
 	configuration = ParseConfig()
 
 	var err error
 
-	if clientset, err = buildOutsideClusterClient(configuration); err != nil {
-		log.Printf("failed to build outside-cluster client: %v", err)
-	} else if clientset, err = buildInsideClusterClient(configuration); err != nil {
-		log.Fatal("unable create a client: %w", err)
+	if clientset, err = buildInsideClusterClient(configuration); err != nil {
+		log.Printf("failed to build inside-cluster client: %v", err)
+		log.Printf("trying to build outside-cluster-one...")
+		err = nil
+
+		if clientset, err = buildOutsideClusterClient(configuration); err != nil {
+			log.Fatal("failed to build outside-cluster client: %w", err)
+		}
 	}
 
 	for {
-		deployments, err := GetNamespacedDeployments(configuration.Namespace)
+		deployments, err := getNamespacedDeployments(configuration.Namespace)
 		if err != nil {
 			log.Fatal("failed to retrieve the deployment list: %w", err)
 		}
-		log.Printf("there are %d deployment in namespace: %s\n", len(deployments.Items), configuration.Namespace)
-
-		// Examples for error handling:
-		// - Use helper functions like e.g. errors.IsNotFound()
-		// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
+		log.Printf("there are %d deployment in namespace: %s", len(deployments.Items), configuration.Namespace)
 
 		list := deployments.Items
 		for _, d := range list {
@@ -79,15 +87,15 @@ func handleDeployment(deployment v1.Deployment) error {
 		}
 
 		if deploymentLifeTime, err = evaluateDeploymentLifetime(deployment); err != nil {
-			return fmt.Errorf("[%s] failed to evaluate 'd' deployment lifetime: %v", name, err)
+			return fmt.Errorf("[%s] failed to evaluate deployment lifetime: %v", name, err)
 		}
 
 		if deploymentLifeTime > restartAfterSec {
-			log.Printf("[%s] need to be restarted (%ds > %ds)\n", name, deploymentLifeTime, restartAfterSec)
+			log.Printf("[%s] need to be restarted (%ds > %ds)", name, deploymentLifeTime, restartAfterSec)
 			if err = restartDeployment(deployment); err != nil {
 				return fmt.Errorf("[%s] failed to be restarted: %v", name, err)
 			}
-			log.Printf("[%s] has been restarted\n", name)
+			log.Printf("[%s] has been restarted", name)
 		}
 	}
 
@@ -95,7 +103,12 @@ func handleDeployment(deployment v1.Deployment) error {
 }
 
 func restartDeployment(deployment v1.Deployment) error {
-	deployment.Spec.Template.Annotations["kubectl.kubernetes.io/restartedAt"] = time.Now().Local().String()
+	annotationMap := deployment.Spec.Template.Annotations
+	if annotationMap == nil {
+		annotationMap = map[string]string{}
+	}
+	annotationMap["kubectl.kubernetes.io/restartedAt"] = time.Now().Local().String()
+	deployment.Spec.Template.Annotations = annotationMap
 
 	_, err := clientset.AppsV1().Deployments(configuration.Namespace).Update(context.TODO(), &deployment, metav1.UpdateOptions{})
 
@@ -128,7 +141,7 @@ func evaluateDeploymentLifetime(deployment v1.Deployment) (int64, error) {
 		return 0, err
 	}
 
-	log.Printf("most recent replicaset is: %s (created at: %s)\n", replicaSet.Name, replicaSet.CreationTimestamp)
+	log.Printf("[%s] most recent replicaset is: %s (created at: %s)", deployment.Name, replicaSet.Name, replicaSet.CreationTimestamp)
 
 	return time.Now().UTC().Unix() - replicaSet.CreationTimestamp.Unix(), nil
 }
@@ -143,7 +156,7 @@ func getMostRecentReplicaset(deployment v1.Deployment) (v1.ReplicaSet, error) {
 		return v1.ReplicaSet{}, err
 	}
 
-	log.Printf("found %d replicas\n", len(replicasets.Items))
+	log.Printf("[%s] found %d replicas", deployment.Name, len(replicasets.Items))
 
 	replicaSetList := replicasets.Items
 	if err = ensureSingleActiveReplicaset(replicaSetList); err != nil {
@@ -199,8 +212,8 @@ func buildOutsideClusterClient(cfg Config) (*kubernetes.Clientset, error) {
 }
 
 func buildInsideClusterClient(cfg Config) (*kubernetes.Clientset, error) {
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", cfg.Kubeconfig)
+
+	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -214,16 +227,9 @@ func buildInsideClusterClient(cfg Config) (*kubernetes.Clientset, error) {
 	return clientset, nil
 }
 
-func GetNamespacedDeployments(namespace string) (*v1.DeploymentList, error) {
+func getNamespacedDeployments(namespace string) (*v1.DeploymentList, error) {
 	deployments, err := clientset.AppsV1().Deployments(namespace).List(context.TODO(), metav1.ListOptions{})
 	return deployments, err
-}
-
-type Config struct {
-	Kubeconfig      string
-	Namespace       string
-	LoopDurationSec int64
-	Verbose         bool
 }
 
 func ParseConfig() Config {
