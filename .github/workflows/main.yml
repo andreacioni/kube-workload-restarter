@@ -28,7 +28,7 @@ jobs:
           uses: docker/build-push-action@v4
           with:
             push: true
-            tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.15
+            tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.16
 
         - name: Configure Git
           run: |
@@ -37,6 +37,8 @@ jobs:
 
         - name: Install Helm
           uses: azure/setup-helm@v3
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Run chart-releaser
           uses: helm/chart-releaser-action@v1.5.0

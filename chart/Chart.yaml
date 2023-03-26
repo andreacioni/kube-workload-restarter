@@ -4,4 +4,4 @@ description: kube-workload-restarter Helm package
 type: application
 
 version: 0.0.1
-appVersion: 0.0.15
+appVersion: 0.0.16
