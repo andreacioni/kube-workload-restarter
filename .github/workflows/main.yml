@@ -70,16 +70,21 @@ jobs:
             rm -f cr.tar.gz
             owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
             repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
-            # package chart
+            
+            echo "package chart"
             ./cr package chart/
-            # upload chart to github relases
+            
+            echo "upload chart to github relases"
             ./cr upload \
                 --owner "$owner" \
                 --git-repo "$repo" \
                 --token "${{ secrets.GITHUB_TOKEN }}" \
-            # update index and push to github pages
+            
+            echo "update index and push to github pages"
             git config user.email "$owner@users.noreply.github.com"
             git config user.name "$owner"
+            
+            echo "index push"
             ./cr index \
                 --owner "$owner" \
                 --git-repo "$repo" \
