@@ -90,6 +90,7 @@ jobs:
             ./cr index \
                 --owner "$owner" \
                 --git-repo "$repo" \
+                --index-path ./index.yaml \
                 --token "${{ secrets.GITHUB_TOKEN }}" \
                 --release-name-template "{{ .Version }}" \
                 --push
