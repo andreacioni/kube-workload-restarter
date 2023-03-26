@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   kube-workload-restarter:
   - apiVersion: v2
+    appVersion: 0.0.22
+    created: "2023-03-26T22:44:32.345449335Z"
+    description: kube-workload-restarter Helm package
+    digest: 2523378c1c833b43f4baf593225cc88a021d6fce24d91247d2f10ec3855ba668
+    name: kube-workload-restarter
+    type: application
+    urls:
+    - https://github.com/andreacioni/kube-workload-restarter/releases/download/0.0.2/kube-workload-restarter-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
     appVersion: 0.0.21
     created: "2023-03-26T22:39:11.72118982Z"
     description: kube-workload-restarter Helm package
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/andreacioni/kube-workload-restarter/releases/download/0.0.1/kube-workload-restarter-0.0.1.tgz
     version: 0.0.1
-generated: "2023-03-26T22:39:11.72119912Z"
+generated: "2023-03-26T22:44:32.345460935Z"
