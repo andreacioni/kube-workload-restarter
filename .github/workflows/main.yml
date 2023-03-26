@@ -89,6 +89,7 @@ jobs:
                 --owner "$owner" \
                 --git-repo "$repo" \
                 --token "${{ secrets.GITHUB_TOKEN }}" \
+                --release-name-template "{{ .Version }}" \
                 --index-path ./index.yaml \
                 --push
 
