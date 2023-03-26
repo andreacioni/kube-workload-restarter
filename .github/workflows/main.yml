@@ -7,7 +7,7 @@ jobs:
   publish:
       name: Build & Publish
       runs-on: ubuntu-latest
-      if: ${{ contains(github.event.head_commit.message, 'Releasing') }}
+      if: ${{ contains(github.event.head_commit.message, 'Releasing Docker image') }}
       steps:
         - name: Checkout
           uses: actions/checkout@v3
@@ -29,7 +29,11 @@ jobs:
           with:
             push: true
             tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.16
-
+          
+  release:
+    name: Release Chart
+    runs-on: ubuntu-latest
+    steps:
         - name: Configure Git
           run: |
             git config user.name "$GITHUB_ACTOR"
@@ -46,5 +50,4 @@ jobs:
             charts_dir: 'chart'
           env:
             CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          
-        
+
