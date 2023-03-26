@@ -70,6 +70,7 @@ jobs:
             rm -f cr.tar.gz
             repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
             owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
+            echo "https://api.github.com/repos/{{repo_name}}$repo/releases/tags/$repo-${{ steps.fix_tag.outputs.tag }}"
             exists=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/{{repo_name}}$repo/releases/tags/$repo-${{ steps.fix_tag.outputs.tag }} -w %{http_code} -o /dev/null)
             if [[ $exists != "200" ]]; then
               echo "Creating release..."
