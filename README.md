@@ -13,7 +13,7 @@ When we talk about [workloads](https://kubernetes.io/docs/concepts/workloads/)we
 - DaemonSet
 - Job & CronJob
 
-> Even if the idea behind `kube-workload-restarter` could be applied to all of this resource, **currently only Deployment workloads are supported**.
+> Even if the idea behind `kube-workload-restarter` could be applied to all of these resources, **currently only Deployment workloads are supported**.
 
 ## Install
 
@@ -66,3 +66,7 @@ spec:
 ```bash
 docker build -t andreacioni/kube-workload-restarter:latest .
 ```
+
+### References:
+
+ - [Medium](TBD)
