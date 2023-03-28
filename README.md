@@ -36,6 +36,8 @@ Currently supported annotations are:
 - `restarter/after`: specify _after_ how much time your workload will be restarted
 - `restarter/when`: in addition to `restarter/after` you can specify when a restart should happen. **This annotation alone has no effect**.
 
+You can set this annotaions on your own Deployment as shown below:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
