@@ -1,42 +1,40 @@
 name: Publish
-#on:
-#  push:
-#    tags:
-#      - 'v*'
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*'
 jobs:
-  #publish:
-  #    name: Build & Publish
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - name: Checkout
-  #        uses: actions/checkout@v3
-#
-  #      - name: Set up QEMU
-  #        uses: docker/setup-qemu-action@v2
-  #      
-  #      - name: Set up Docker Buildx
-  #        uses: docker/setup-buildx-action@v2
-  #      
-  #      - name: Login to Docker Hub
-  #        uses: docker/login-action@v2
-  #        with:
-  #          username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#
-  #      - name: Build and push
-  #        uses: docker/build-push-action@v4
-  #        with:
-  #          push: true
-  #          tags: andreacioni/k8s-workload-restarter:latest,andreacioni/k8s-workload-restarter:0.0.18
-  #        
+  publish:
+      name: Build & Publish
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v2
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v2
+
+        - name: Login to Docker Hub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+        - name: Build and push
+          uses: docker/build-push-action@v4
+          with:
+            push: true
+            tags: andreacioni/kube-workload-restarter:latest,andreacioni/kube-workload-restarter:0.0.23
+
   release:
     name: Release Chart
     runs-on: ubuntu-latest
-    #needs: publish
+    needs: publish
+    permissions:
+      contents: write
     steps:
         - name: Checkout
           uses: actions/checkout@v3
@@ -53,10 +51,43 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Run chart-releaser
-          uses: helm/chart-releaser-action@v1.5.0
-          with:
-            charts_dir: ./chart
-          env:
-            CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        #- name: Run chart-releaser
+        #  uses: helm/chart-releaser-action@v1.5.0
+        #  with:
+        #    charts_dir: ./chart
+        #  env:
+        #    CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+        - name: Chart releaser
+          run: |
+            echo "download chart releaser"
+            curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v1.5.0/chart-releaser_1.5.0_linux_amd64.tar.gz"
+            tar -xzf cr.tar.gz
+            rm -f cr.tar.gz
+
+            owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
+            repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
+            
+            echo "package chart"
+            ./cr package chart/
+            
+            echo "upload chart to github relases"
+            ./cr upload \
+                --owner "$owner" \
+                --git-repo "$repo" \
+                --release-name-template "{{ .Version }}" \
+                --token "${{ secrets.GITHUB_TOKEN }}" \
+            
+            echo "update index and push to github pages"
+            git config user.email "$owner@users.noreply.github.com"
+            git config user.name "$owner"
+            
+            echo "index push"
+            ./cr index \
+                --owner "$owner" \
+                --git-repo "$repo" \
+                --index-path ./index.yaml \
+                --token "${{ secrets.GITHUB_TOKEN }}" \
+                --release-name-template "{{ .Version }}" \
+                --push
 
