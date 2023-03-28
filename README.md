@@ -6,7 +6,7 @@
 
 ### Workloads
 
-When we talk about [workloads](https://kubernetes.io/docs/concepts/workloads/)we are referring to the following resources:
+When we talk about [workloads](https://kubernetes.io/docs/concepts/workloads/) we are referring to the following resources:
 
 - Deployment
 - StatefulSet
