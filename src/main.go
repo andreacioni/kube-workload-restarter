@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/robfig/cron"
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -81,6 +82,15 @@ func handleDeployment(deployment v1.Deployment) error {
 		var restartAfterSec int64
 		var deploymentLifeTime int64
 		var err error
+		restartWhenMatch := false
+
+		if restartWhenCron, ok := deployment.Annotations[RESTART_WHEN_ANNOTATION]; ok {
+			restartWhenMatch, err = evaluateCronExpression(restartWhenCron)
+
+			if err != nil {
+				log.Printf("[%s] has %s annotation but it can't be parsed: '%s'", name, RESTART_WHEN_ANNOTATION, restartWhenCron)
+			}
+		}
 
 		if restartAfterSec, err = parseRestartAfter(restartAfter); err != nil {
 			return fmt.Errorf("[%s] failed to parse '%s' duration on deployment: %s, error: %v", name, restartAfter, name, err)
@@ -90,7 +100,7 @@ func handleDeployment(deployment v1.Deployment) error {
 			return fmt.Errorf("[%s] failed to evaluate deployment lifetime: %v", name, err)
 		}
 
-		if deploymentLifeTime > restartAfterSec {
+		if deploymentLifeTime > restartAfterSec && restartWhenMatch {
 			log.Printf("[%s] need to be restarted (%ds > %ds)", name, deploymentLifeTime, restartAfterSec)
 			if err = restartDeployment(deployment); err != nil {
 				return fmt.Errorf("[%s] failed to be restarted: %v", name, err)
@@ -261,4 +271,14 @@ func ParseConfig() Config {
 
 	return c
 
+}
+
+func evaluateCronExpression(cronExpr string) (bool, error) {
+	p, err := cron.ParseStandard(cronExpr)
+	if err != nil {
+		return false, err
+	}
+	now := time.Now()
+	nextTime := p.Next(now)
+	return now.Equal(nextTime), nil
 }
