@@ -82,7 +82,7 @@ func handleDeployment(deployment v1.Deployment) error {
 		var restartAfterSec int64
 		var deploymentLifeTime int64
 		var err error
-		restartWhenMatch := false
+		restartWhenMatch := true
 
 		if restartWhenCron, ok := deployment.Annotations[RESTART_WHEN_ANNOTATION]; ok {
 			restartWhenMatch, err = evaluateCronExpression(restartWhenCron)
