@@ -27,7 +27,7 @@ jobs:
           uses: docker/build-push-action@v4
           with:
             push: true
-            tags: andreacioni/kube-workload-restarter:latest,andreacioni/kube-workload-restarter:0.0.23
+            tags: andreacioni/kube-workload-restarter:latest,andreacioni/kube-workload-restarter:0.0.24
 
   release:
     name: Release Chart
