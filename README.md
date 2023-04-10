@@ -69,4 +69,4 @@ docker build -t andreacioni/kube-workload-restarter:latest .
 
 ### References:
 
- - [Medium](TBD)
+ - [Medium](https://medium.com/@andrea_cioni/how-to-schedule-safe-kubernetes-replicasets-restart-7c60adf6331f)
